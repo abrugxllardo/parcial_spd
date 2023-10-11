@@ -1,32 +1,293 @@
-# Prerequisites
-*.d
+#define A 10
+#define B 11
+#define C 5
+#define D 6
+#define E 7
+#define F 9
+#define G 8
+#define BOTON_INCREMENTA 4
+#define BOTON_DECREMENTA 3
+#define INTERRUPTOR_DESLIZANTE 2
+#define DISPLAY_UNIDAD A4
+#define DISPLAY_DECENA A5
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+int contador=0;
+int contador_primos = 0;
+int presionar_boton_aumentar;
+int aumentar_numero;
+int presionar_boton_disminuir;
+int disminuir_numero;
+bool bandera_primo;
 
-# Precompiled Headers
-*.gch
-*.pch
+void setup()
+{
+  pinMode(3, INPUT_PULLUP);
+  pinMode(4, INPUT_PULLUP);
+  pinMode(2, INPUT);
+  pinMode(5, OUTPUT);
+  pinMode(6, OUTPUT);
+  pinMode(7, OUTPUT);
+  pinMode(8, OUTPUT);
+  pinMode(9, OUTPUT);
+  pinMode(10, OUTPUT);
+  pinMode(11, OUTPUT);
+  pinMode(DISPLAY_UNIDAD, OUTPUT);
+  pinMode(DISPLAY_DECENA, OUTPUT);
+  digitalWrite(DISPLAY_UNIDAD,0);
+  digitalWrite(DISPLAY_DECENA,0);
+  encender_numeros_led(0);
+}
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+void loop()
+{
+	mover_interruptor();
+  
+}
 
-# Fortran module files
-*.mod
-*.smod
+void encender_numeros_led(int numero)
+{
+  digitalWrite(A, LOW);
+  digitalWrite(B, LOW);
+  digitalWrite(C, LOW);
+  digitalWrite(D, LOW);
+  digitalWrite(E, LOW);
+  digitalWrite(F, LOW);
+  digitalWrite(G, LOW);
+  switch (numero)
+  {
+    case 0:
+  	{
+        digitalWrite(A, HIGH);
+        digitalWrite(B, HIGH);
+        digitalWrite(C, HIGH);
+        digitalWrite(D, HIGH);
+        digitalWrite(E, HIGH);
+        digitalWrite(F, HIGH);
+      	break;
+  	} 
+  	case 1:
+  	{
+        digitalWrite(B, HIGH);
+ 	    digitalWrite(C, HIGH);
+      	break;
+  	}
+    case 2:
+  	{
+        digitalWrite(A, HIGH);
+        digitalWrite(B, HIGH);
+        digitalWrite(D, HIGH);
+        digitalWrite(E, HIGH);
+        digitalWrite(G, HIGH);
+      	break;
+  	}
+  
+    case 3:
+  	{
+        digitalWrite(A, HIGH);
+        digitalWrite(B, HIGH);
+        digitalWrite(C, HIGH);
+        digitalWrite(D, HIGH);
+        digitalWrite(G, HIGH);
+      	break;
+  	}
+    case 4:
+  	{
+        digitalWrite(B, HIGH);
+        digitalWrite(C, HIGH);
+        digitalWrite(F, HIGH);
+        digitalWrite(G, HIGH);
+      	break;
+  	}
+    
+    case 5:
+  	{
+        digitalWrite(A, HIGH);
+        digitalWrite(C, HIGH);
+        digitalWrite(D, HIGH);
+      	digitalWrite(F, HIGH);
+        digitalWrite(G, HIGH);
+      	break;
+  	}
+    case 6:
+  	{
+        digitalWrite(A, HIGH);
+        digitalWrite(C, HIGH);
+        digitalWrite(D, HIGH);
+      	digitalWrite(E, HIGH);
+      	digitalWrite(F, HIGH);
+        digitalWrite(G, HIGH);
+      	break;
+  	}
+    
+    case 7:
+  	{
+        digitalWrite(A, HIGH);
+        digitalWrite(B, HIGH);
+        digitalWrite(C, HIGH);
+      	break;
+  	}
+     case 8:
+  	{
+        digitalWrite(A, HIGH);
+        digitalWrite(B, HIGH);
+        digitalWrite(C, HIGH);
+        digitalWrite(D, HIGH);
+        digitalWrite(E, HIGH);
+        digitalWrite(F, HIGH);
+        digitalWrite(G, HIGH);
+      	break;
+  	} 
+     case 9:
+  	{
+        digitalWrite(A, HIGH);
+        digitalWrite(B, HIGH);
+        digitalWrite(C, HIGH);
+        digitalWrite(D, HIGH);
+        digitalWrite(F, HIGH);
+        digitalWrite(G, HIGH);
+      	break;
+  	}     
+  }
+}
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
+void mostrar_decena_unidad(int numero)
+{
+	if (numero == DISPLAY_UNIDAD)
+    {
+        digitalWrite(DISPLAY_UNIDAD, LOW); 
+        digitalWrite(DISPLAY_DECENA, HIGH); 
+      	delay(10);
+    }
+  	else if (numero == DISPLAY_DECENA)
+    {
+        digitalWrite(DISPLAY_UNIDAD, HIGH);
+        digitalWrite(DISPLAY_DECENA, LOW);
+      	delay(10);
+    }
+  else
+  	{
+        digitalWrite(DISPLAY_UNIDAD, HIGH);
+        digitalWrite(DISPLAY_DECENA, HIGH);
+    }
+}
 
-# Executables
-*.exe
-*.out
-*.app
+
+void contador_decena_unidad(int numero) 
+{
+  	mostrar_decena_unidad(0);
+	encender_numeros_led(numero/10);
+  	mostrar_decena_unidad(DISPLAY_DECENA);
+    mostrar_decena_unidad(0);
+ 	encender_numeros_led(numero - 10*((int) numero/10));
+  	mostrar_decena_unidad(DISPLAY_UNIDAD); 
+}
+
+int presionar_botones()
+{ 
+  presionar_boton_aumentar = digitalRead(BOTON_INCREMENTA); 
+  presionar_boton_disminuir = digitalRead(BOTON_DECREMENTA);
+  if (presionar_boton_aumentar == 1)     
+    aumentar_numero = 1; 
+  if (presionar_boton_disminuir)
+    disminuir_numero = 1;
+  
+  
+  if(presionar_boton_aumentar == 0 && presionar_boton_aumentar != aumentar_numero)
+  {
+    aumentar_numero = presionar_boton_aumentar;
+    return BOTON_INCREMENTA;
+  }
+
+  if(presionar_boton_disminuir == 0 && presionar_boton_disminuir != disminuir_numero)
+  {
+    disminuir_numero = presionar_boton_disminuir;
+    return BOTON_DECREMENTA;
+  }
+ return 0;
+}
+
+
+void aumentar_disminuir()
+{
+  int boton_presionado = presionar_botones();
+	if(boton_presionado == BOTON_INCREMENTA)
+    {
+      contador++;
+      if(contador > 99)
+        contador=0;
+    }
+  	else if(boton_presionado == BOTON_DECREMENTA)
+    {
+      contador--;
+      if(contador < 0)
+      contador=99;
+    } 
+  	contador_decena_unidad(contador);
+}
+
+
+
+int esPrimo(int numero)
+{
+    if (numero <= 1)
+    {
+        return 0; 
+    }
+    
+    for (int i = 2; i <= numero / 2; i++)
+    {
+        if (numero % i == 0)
+        {
+            return 0;  
+        }
+    }
+    
+   return 1;  
+}
+
+
+
+int aumentar_didminuir_numeros_Primos()
+{
+  int boton_presionado = presionar_botones();
+  
+  if(boton_presionado == BOTON_INCREMENTA)
+  {
+    for (int i = 0; i <= 99; i++)
+    {
+        if (esPrimo(i))
+        {
+            contador_primos++;
+          	if(contador_primos > 99)
+        	contador_primos=0;
+        }
+    }
+  }
+  else if(boton_presionado == BOTON_DECREMENTA)
+  {
+      for (int i = 0; i <= 99; i++)
+    {
+        if (esPrimo(i))
+        {
+            contador_primos--;
+          	if(contador_primos <0)
+        	contador_primos=99;
+        }
+    }
+  } 
+  contador_decena_unidad(contador_primos);
+}
+
+
+
+void mover_interruptor()
+{
+  if(digitalRead(INTERRUPTOR_DESLIZANTE) == 0)
+  {
+    aumentar_disminuir();
+  }
+  else if(digitalRead(INTERRUPTOR_DESLIZANTE) == 1)
+  {
+    aumentar_didminuir_numeros_Primos();
+  }
+}
